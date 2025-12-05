@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "clientes")
@@ -16,9 +18,13 @@ public class Cliente {
 	@Column(name = "id_cliente")
 	private Long idCliente;
 
+	@NotBlank
+	@Size(max = 100)
 	@Column(nullable = false, length = 100)
 	private String nombre;
 
+	@NotBlank
+	@Size(max = 30)
 	@Column(nullable = false, length = 30)
 	private String telefono;
 

@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.restaurante.reservas.model.Mesa;
 import com.restaurante.reservas.service.MesaService;
+import jakarta.validation.Valid;
 /**
  *
  * @author STEVEN AF
@@ -29,7 +31,7 @@ public class MesaController {
 
 	// RF2: Registrar Mesa
 	@PostMapping
-	public ResponseEntity<Mesa> crearMesa(@RequestBody Mesa mesa) {
+	public ResponseEntity<Mesa> crearMesa(@Valid @RequestBody Mesa mesa) {
 		Mesa nuevaMesa = mesaService.crearMesa(mesa);
 		return new ResponseEntity<>(nuevaMesa, HttpStatus.CREATED);
 	}
@@ -51,23 +53,20 @@ public class MesaController {
 
 	// RF5: Actualizar Mesa
 	@PutMapping("/{id}")
-	public ResponseEntity<Mesa> actualizarMesa(@PathVariable Long id, @RequestBody Mesa mesa) {
-		try {
-			Mesa mesaActualizada = mesaService.actualizarMesa(id, mesa);
-			return ResponseEntity.ok(mesaActualizada);
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<Mesa> actualizarMesa(@PathVariable Long id, @Valid @RequestBody Mesa mesa) {
+		Mesa mesaActualizada = mesaService.actualizarMesa(id, mesa);
+		return ResponseEntity.ok(mesaActualizada);
 	}
 
 	// RF5: Eliminar Mesa
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> eliminarMesa(@PathVariable Long id) {
-		try {
-			mesaService.eliminarMesa(id);
-			return ResponseEntity.noContent().build();
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+		mesaService.eliminarMesa(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<String> manejarNoEncontrado(RuntimeException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 }

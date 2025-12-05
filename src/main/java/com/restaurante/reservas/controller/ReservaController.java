@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.restaurante.reservas.model.Reserva;
 import com.restaurante.reservas.service.ReservaService;
@@ -36,12 +37,8 @@ public class ReservaController {
 	// RF3: Registrar Reserva
 	@PostMapping
 	public ResponseEntity<Reserva> crearReserva(@RequestBody Reserva reserva) {
-		try {
-			Reserva nuevaReserva = reservaService.crearReserva(reserva);
-			return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
-		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().build();
-		}
+		Reserva nuevaReserva = reservaService.crearReserva(reserva);
+		return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
 	}
 
 	// RF4: Listar Reservas
@@ -62,23 +59,15 @@ public class ReservaController {
 	// RF5: Actualizar Reserva
 	@PutMapping("/{id}")
 	public ResponseEntity<Reserva> actualizarReserva(@PathVariable Long id, @RequestBody Reserva reserva) {
-		try {
-			Reserva reservaActualizada = reservaService.actualizarReserva(id, reserva);
-			return ResponseEntity.ok(reservaActualizada);
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+		Reserva reservaActualizada = reservaService.actualizarReserva(id, reserva);
+		return ResponseEntity.ok(reservaActualizada);
 	}
 
 	// RF5: Eliminar Reserva
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
-		try {
-			reservaService.eliminarReserva(id);
-			return ResponseEntity.noContent().build();
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+		reservaService.eliminarReserva(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	// RF6: Consultar disponibilidad básica de mesas
@@ -97,6 +86,27 @@ public class ReservaController {
 		respuesta.put("disponible", disponible);
 		
 		return ResponseEntity.ok(respuesta);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<Map<String, String>> manejarBadRequest(IllegalArgumentException ex) {
+		Map<String, String> body = new HashMap<>();
+		body.put("mensaje", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<Map<String, String>> manejarConflicto(IllegalStateException ex) {
+		Map<String, String> body = new HashMap<>();
+		body.put("mensaje", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<Map<String, String>> manejarNoEncontrado(RuntimeException ex) {
+		Map<String, String> body = new HashMap<>();
+		body.put("mensaje", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
 	}
 }
 

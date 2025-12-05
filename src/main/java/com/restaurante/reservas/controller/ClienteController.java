@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.restaurante.reservas.model.Cliente;
 import com.restaurante.reservas.service.ClienteService;
+import jakarta.validation.Valid;
 /**
  *
  * @author STEVEN AF
@@ -28,7 +30,7 @@ public class ClienteController {
 
 	// RF1: Registrar Cliente
 	@PostMapping
-	public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
+	public ResponseEntity<Cliente> crearCliente(@Valid @RequestBody Cliente cliente) {
 		Cliente nuevoCliente = clienteService.crearCliente(cliente);
 		return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED);
 	}
@@ -50,24 +52,21 @@ public class ClienteController {
 
 	// RF5: Actualizar Cliente
 	@PutMapping("/{id}")
-	public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
-		try {
-			Cliente clienteActualizado = clienteService.actualizarCliente(id, cliente);
-			return ResponseEntity.ok(clienteActualizado);
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
+		Cliente clienteActualizado = clienteService.actualizarCliente(id, cliente);
+		return ResponseEntity.ok(clienteActualizado);
 	}
 
 	// RF5: Eliminar Cliente
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> eliminarCliente(@PathVariable Long id) {
-		try {
-			clienteService.eliminarCliente(id);
-			return ResponseEntity.noContent().build();
-		} catch (RuntimeException e) {
-			return ResponseEntity.notFound().build();
-		}
+		clienteService.eliminarCliente(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<String> manejarNoEncontrado(RuntimeException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 }
 

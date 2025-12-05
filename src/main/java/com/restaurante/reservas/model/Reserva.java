@@ -14,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "reservas")
@@ -29,16 +31,21 @@ public class Reserva {
 	@Column(name = "id_reserva")
 	private Long idReserva;
 
+	@NotNull
+	@FutureOrPresent
 	@Column(nullable = false)
 	private LocalDate fecha;
 
+	@NotNull
 	@Column(nullable = false)
 	private LocalTime hora;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "id_mesa")
 	private Mesa mesa;

@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "mesas")
@@ -23,9 +26,13 @@ public class Mesa {
 	@Column(name = "id_mesa")
 	private Long idMesa;
 
+	@NotNull
 	@Column(name = "numero_mesa", nullable = false, unique = true)
 	private Integer numeroMesa;
 
+	@NotNull
+	@Min(1)
+	@Max(20)
 	@Column(nullable = false)
 	private Integer capacidad;
 

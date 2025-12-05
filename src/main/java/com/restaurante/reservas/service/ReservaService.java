@@ -36,6 +36,16 @@ public class ReservaService {
 
 	// RF3: Registrar Reserva
 	public Reserva crearReserva(Reserva reserva) {
+		if (reserva.getCliente() == null || reserva.getCliente().getIdCliente() == null) {
+			throw new IllegalArgumentException("Debe indicar el id del cliente");
+		}
+		if (reserva.getMesa() == null || reserva.getMesa().getIdMesa() == null) {
+			throw new IllegalArgumentException("Debe indicar el id de la mesa");
+		}
+		if (reserva.getFecha() == null || reserva.getHora() == null) {
+			throw new IllegalArgumentException("Debe indicar fecha y hora");
+		}
+
 		// Validar que el cliente existe
 		Cliente cliente = clienteRepository.findById(reserva.getCliente().getIdCliente())
 				.orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
@@ -43,6 +53,12 @@ public class ReservaService {
 		// Validar que la mesa existe
 		Mesa mesa = mesaRepository.findById(reserva.getMesa().getIdMesa())
 				.orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
+
+		// Validar disponibilidad
+		boolean disponible = verificarDisponibilidad(mesa.getIdMesa(), reserva.getFecha(), reserva.getHora());
+		if (!disponible) {
+			throw new IllegalStateException("La mesa ya está reservada en esa fecha y hora");
+		}
 
 		reserva.setCliente(cliente);
 		reserva.setMesa(mesa);
@@ -82,6 +98,14 @@ public class ReservaService {
 
 		if (reservaActualizada.getHora() != null) {
 			reserva.setHora(reservaActualizada.getHora());
+		}
+
+		// Si cambiaron mesa/fecha/hora, validar disponibilidad
+		if (reserva.getMesa() != null && reserva.getFecha() != null && reserva.getHora() != null) {
+			boolean disponible = verificarDisponibilidad(reserva.getMesa().getIdMesa(), reserva.getFecha(), reserva.getHora());
+			if (!disponible) {
+				throw new IllegalStateException("La mesa ya está reservada en esa fecha y hora");
+			}
 		}
 
 		if (reservaActualizada.getEstado() != null) {
