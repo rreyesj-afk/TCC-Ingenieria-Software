@@ -130,4 +130,5 @@ public class ReservaService {
 				idMesa, fecha, hora, Estado.ACTIVA);
 		return !tieneReserva; // Retorna true si está disponible (no tiene reserva)
 	}
+        
 }
