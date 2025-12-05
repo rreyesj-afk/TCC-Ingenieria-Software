@@ -64,6 +64,11 @@ public class ClienteController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<String> manejarConflicto(IllegalStateException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+	}
+
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<String> manejarNoEncontrado(RuntimeException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

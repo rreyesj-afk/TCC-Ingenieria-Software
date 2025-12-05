@@ -14,4 +14,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     
     // RF6: Verificar si una mesa tiene reserva en una fecha/hora específica
     boolean existsByMesaIdMesaAndFechaAndHoraAndEstado(Long idMesa, LocalDate fecha, LocalTime hora, Estado estado);
+
+    // Para validaciones de integridad en deletes
+    boolean existsByClienteIdClienteAndEstado(Long idCliente, Estado estado);
+    boolean existsByMesaIdMesaAndEstado(Long idMesa, Estado estado);
 }

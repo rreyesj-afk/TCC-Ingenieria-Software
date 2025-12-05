@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.restaurante.reservas.model.Cliente;
+import com.restaurante.reservas.model.Reserva;
 import com.restaurante.reservas.repository.ClienteRepository;
+import com.restaurante.reservas.repository.ReservaRepository;
 
 @Service
 @Transactional
@@ -20,6 +22,9 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+	@Autowired
+	private ReservaRepository reservaRepository;
 
     // RF1: Registrar Cliente
     public Cliente crearCliente(Cliente cliente) {
@@ -47,9 +52,14 @@ public class ClienteService {
 
     // RF5: Eliminar Cliente
     public void eliminarCliente(Long id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente no encontrado con id: " + id);
-        }
-        clienteRepository.deleteById(id);
+		if (!clienteRepository.existsById(id)) {
+			throw new RuntimeException("Cliente no encontrado con id: " + id);
+		}
+		// Bloquear eliminación si tiene reservas activas
+		boolean tieneReservas = reservaRepository.existsByClienteIdClienteAndEstado(id, Reserva.Estado.ACTIVA);
+		if (tieneReservas) {
+			throw new IllegalStateException("No se puede eliminar el cliente porque tiene reservas activas");
+		}
+		clienteRepository.deleteById(id);
     }
 }

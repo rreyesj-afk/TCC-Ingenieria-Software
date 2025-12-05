@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.restaurante.reservas.model.Mesa;
+import com.restaurante.reservas.model.Reserva;
 import com.restaurante.reservas.repository.MesaRepository;
+import com.restaurante.reservas.repository.ReservaRepository;
 
 @Service
 @Transactional
@@ -20,6 +22,9 @@ public class MesaService {
 
     @Autowired
     private MesaRepository mesaRepository;
+
+	@Autowired
+	private ReservaRepository reservaRepository;
 
     // RF2: Registrar Mesa
     public Mesa crearMesa(Mesa mesa) {
@@ -51,6 +56,11 @@ public class MesaService {
         if (!mesaRepository.existsById(id)) {
             throw new RuntimeException("Mesa no encontrada con id: " + id);
         }
+		// Bloquear eliminación si tiene reservas activas
+		boolean tieneReservas = reservaRepository.existsByMesaIdMesaAndEstado(id, Reserva.Estado.ACTIVA);
+		if (tieneReservas) {
+			throw new IllegalStateException("No se puede eliminar la mesa porque tiene reservas activas");
+		}
         mesaRepository.deleteById(id);
     }
 }
