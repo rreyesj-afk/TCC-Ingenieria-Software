@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.restaurante.reservas.repository;
 
-/**
- *
- * @author LENOVO84
- */
-public class MesaRepository {
-    
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.restaurante.reservas.model.Mesa;
+
+@Repository
+public interface MesaRepository extends JpaRepository<Mesa, Long> {
 }
