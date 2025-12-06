@@ -1,0 +1,32 @@
+# Archivos y directorios a ignorar en Docker
+# Nota: NO excluimos target/ porque necesitamos el JAR
+# target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.git
+.gitignore
+README.md
+*.md
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.DS_Store
+*.log
+*.class
+.settings
+.project
+.classpath
+nbproject
+node_modules
+.env
+*.swp
+*.swo
+*~
+
+# Archivos de configuración local
+src/main/resources/application.properties
+
+
+
